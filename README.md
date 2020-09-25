@@ -40,3 +40,10 @@ sam logs -n myLambdaToSlack --stack-name SNSToLambdaToSlack --tail
 ```bash
 aws cloudformation delete-stack --stack-name SNSToLambdaToSlack
 ```
+
+
+# 測試從 alarm 中觸發此服務
+
+1. 建立 alarm, 觸發 sns topic
+  - 設定名稱為 myAlarmToSNSToLambdaToSlack
+2. `aws cloudwatch set-alarm-state --alarm-name myAlarmToSNSToLambdaToSlack --state-value ALARM --state-reason for_test`

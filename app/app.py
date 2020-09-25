@@ -17,9 +17,7 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     logger.info("Event: " + str(event))
-    message = event['Records'][0]['Sns']['Message']
-    subject = event['Records'][0]['Sns']['Subject']
-    text = {"subject":subject, "message":message}
+    text = event['Records'][0]['Sns']['Message']
     logger.info("text: " + str(text))
 
     slack_message = {
