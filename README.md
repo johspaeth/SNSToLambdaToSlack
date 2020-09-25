@@ -2,9 +2,7 @@
 
 ## 目的
 - 建立制式的 sns -> lambda -> slack 的回報機制
-  - 使用 sns subject 來區分不同的任務回報類型
-- 情境
-  - 可使用 alarm 來觸發 sns 來達到通知的目的
+- 情境 : 可使用 alarm 來觸發 sns 來達到通知的目的
 
 ## 環境設定
 - 設定憑證環境變數 : `export AWS_PROFILE=...`
@@ -47,3 +45,31 @@ aws cloudformation delete-stack --stack-name SNSToLambdaToSlack
 1. 建立 alarm, 觸發 sns topic
   - 設定名稱為 myAlarmToSNSToLambdaToSlack
 2. `aws cloudwatch set-alarm-state --alarm-name myAlarmToSNSToLambdaToSlack --state-value ALARM --state-reason for_test`
+
+``` alarm test issue
+{
+  "AlarmName": "myAlarmToSNSToLambdaToSlack",
+  "AlarmDescription": "hello",
+  "AWSAccountId": "424613967558",
+  "NewStateValue": "ALARM",
+  "NewStateReason": "for_test",
+  "StateChangeTime": "2020-09-25T09:19:02.730+0000",
+  "Region": "Asia Pacific (Singapore)",
+  "AlarmArn": "arn:aws:cloudwatch:ap-southeast-1:424613967558:alarm:alarm",
+  "OldStateValue": "INSUFFICIENT_DATA",
+  "Trigger": {
+    "MetricName": "test",
+    "Namespace": "test",
+    "StatisticType": "Statistic",
+    "Statistic": "SUM",
+    "Unit": null,
+    "Dimensions": [],
+    "Period": 300,
+    "EvaluationPeriods": 1,
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Threshold": 100000,
+    "TreatMissingData": "- TreatMissingData:                    missing",
+    "EvaluateLowSampleCountPercentile": ""
+  }
+}
+```
