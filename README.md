@@ -9,7 +9,7 @@
 ## 環境設定
 - 設定憑證環境變數 : `export AWS_PROFILE=...`
 - template.yaml 設定 slack 參數
-  - hookUrl, ex : "https://hooks.slack.com/services/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"
+  - hookUrl, ex : "https://hooks.slack.com/services/..."
   - slackChannel, ex : "#general"
 
 ## Deploy the sample application
