@@ -8,14 +8,19 @@ Description: >
 Globals:
   Function:
     Timeout: 3
+Parameters:
+  ServiceName:
+    Type: String
+    Default: SNSToLambdaToSlack
+    Description: Set a clear name for identity
 
 Resources:
-  myLambdaToSlack:
+  myLambda:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: app/
       Handler: app.lambda_handler
-      FunctionName: SNSToLambdaToSlack
+      FunctionName: !Ref ServiceName
       Description: sns->lambda->slack
       MemorySize: 128
       Runtime: python3.8
@@ -27,19 +32,19 @@ Resources:
         MySNSEvent:
           Type: SNS
           Properties:
-            Topic: !Ref mySNSToLambdaToSlack
-  mySNSToLambdaToSlack:
+            Topic: !Ref mySNS
+  mySNS:
     Type: AWS::SNS::Topic
     Properties: 
-      DisplayName: SNSToLambdaToSlack
+      DisplayName: !Ref ServiceName
       # 透過 AWS::SNS::Topic 建立訂閱, 無法在 CFN 刪除時, 一並刪除
       # Subscription: 
       #   - Endpoint: !GetAtt
-      #       - myLambdaToSlack
+      #       - myLambda
       #       - Arn
       #     Protocol: lambda
-      TopicName: SNSToLambdaToSlack
-  mySubscriptionOfLambda:
+      TopicName: !Ref ServiceName
+  mySNSTopicSubscription:
     Type: AWS::SNS::Subscription
     Properties: 
       Endpoint: !Join
@@ -48,6 +53,6 @@ Resources:
           - !Ref AWS::Region
           - !Ref 'AWS::AccountId'
           - 'function'
-          - !Ref myLambdaToSlack
+          - !Ref myLambda
       Protocol: lambda
-      TopicArn: !Ref mySNSToLambdaToSlack
+      TopicArn: !Ref mySNS
