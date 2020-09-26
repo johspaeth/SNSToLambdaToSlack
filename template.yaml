@@ -13,6 +13,14 @@ Parameters:
     Type: String
     Default: SNSToLambdaToSlack
     Description: Set a clear name for identity
+  SlackHookUrl: 
+    Type: String
+    Default: http://...
+    Description: Set slack url
+  SlackChannel: 
+    Type: String
+    Default: "#general"
+    Description: Set slack url
 
 Resources:
   myLambda:
@@ -26,8 +34,8 @@ Resources:
       Runtime: python3.8
       Environment:
         Variables:
-          hookUrl: ""
-          slackChannel: "#general"
+          hookUrl: !Ref SlackHookUrl
+          slackChannel: !Ref SlackChannel
       Events:
         MySNSEvent:
           Type: SNS
