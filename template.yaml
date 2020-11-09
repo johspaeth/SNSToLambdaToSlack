@@ -7,52 +7,67 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
 Parameters:
-  ServiceName:
+  
+  NotifyLambdaName:
     Type: String
     Default: SNSToLambdaToSlack
     Description: Set a clear name for identity
   SlackHookUrl: 
     Type: String
-    Default: http://...
+    Default: ""
+    Description: "Set slack url, http://..."
+  InfoChannel: 
+    Type: String
+    Default: "#general"
     Description: Set slack url
-  SlackChannel: 
+  IssueChannel: 
     Type: String
     Default: "#general"
     Description: Set slack url
 
 Resources:
-  myLambda:
+  notifyLambda:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: app/
       Handler: app.lambda_handler
-      FunctionName: !Ref ServiceName
-      Description: sns->lambda->slack
+      FunctionName: !Ref NotifyLambdaName
+      Description: "sns->lambda->slack"
       MemorySize: 128
       Runtime: python3.8
       Environment:
         Variables:
           hookUrl: !Ref SlackHookUrl
-          slackChannel: !Ref SlackChannel
+          InfoChannel: !Ref InfoChannel
+          IssueChannel: !Ref IssueChannel
+          InfoTopicArn: !Ref InfoSNS
+          IssueTopicArn: !Ref IssueSNS
       Events:
-        MySNSEvent:
+        infoEvent:
           Type: SNS
           Properties:
-            Topic: !Ref mySNS
-  mySNS:
+            Topic: !Ref InfoSNS
+        issueEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref IssueSNS
+
+
+  ## SNS 
+  InfoSNS:
     Type: AWS::SNS::Topic
     Properties: 
-      DisplayName: !Ref ServiceName
-      # 透過 AWS::SNS::Topic 建立訂閱, 無法在 CFN 刪除時, 一並刪除
-      # Subscription: 
-      #   - Endpoint: !GetAtt
-      #       - myLambda
-      #       - Arn
-      #     Protocol: lambda
-      TopicName: !Ref ServiceName
-  mySNSTopicSubscription:
+      DisplayName: !Join 
+        - "-"
+        - - !Ref NotifyLambdaName
+          - "INFO"
+      TopicName: !Join 
+        - "-"
+        - - !Ref NotifyLambdaName
+          - "INFO"
+  InfoSNSTopicSubscription:
     Type: AWS::SNS::Subscription
     Properties: 
       Endpoint: !Join
@@ -61,6 +76,35 @@ Resources:
           - !Ref AWS::Region
           - !Ref 'AWS::AccountId'
           - 'function'
-          - !Ref myLambda
+          - !Ref notifyLambda
       Protocol: lambda
-      TopicArn: !Ref mySNS
+      TopicArn: !Ref InfoSNS
+  IssueSNS:
+    Type: AWS::SNS::Topic
+    Properties: 
+      DisplayName: !Join 
+        - "-"
+        - - !Ref NotifyLambdaName
+          - "ISSUE"
+      # 透過 AWS::SNS::Topic 建立訂閱, 無法在 CFN 刪除時, 一並刪除
+      # Subscription: 
+      #   - Endpoint: !GetAtt
+      #       - myLambda
+      #       - Arn
+      #     Protocol: lambda
+      TopicName: !Join 
+        - "-"
+        - - !Ref NotifyLambdaName
+          - "ISSUE"
+  IssueSNSTopicSubscription:
+    Type: AWS::SNS::Subscription
+    Properties: 
+      Endpoint: !Join
+        - ':'
+        - - 'arn:aws:lambda'
+          - !Ref AWS::Region
+          - !Ref 'AWS::AccountId'
+          - 'function'
+          - !Ref notifyLambda
+      Protocol: lambda
+      TopicArn: !Ref IssueSNS

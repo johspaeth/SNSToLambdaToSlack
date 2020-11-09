@@ -13,7 +13,7 @@
 ## Deploy the sample application
 
 ```bash
-sam build --use-container
+sam build
 sam deploy --guided
 ```
 
@@ -23,7 +23,7 @@ sam deploy --guided
 ## Use the SAM CLI to build and test locally
 
 ```bash
-sam build --use-container
+sam build
 sam local invoke SNSToLambdaToSlack --event events/event.json
 ```
 

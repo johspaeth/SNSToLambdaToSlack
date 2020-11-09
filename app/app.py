@@ -8,7 +8,11 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 
 
-SLACK_CHANNEL = os.environ['slackChannel']
+INFO_CHANNEL = os.environ['InfoChannel']
+INFO_TOPIC_ARN = os.environ['InfoTopicArn']
+ISSUE_CHANNEL = os.environ['IssueChannel']
+ISSUE_TOPIC_ARN = os.environ['IssueTopicArn']
+# 
 HOOK_URL = os.environ['hookUrl']
 
 logger = logging.getLogger()
@@ -17,6 +21,14 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     logger.info("Event: " + str(event))
+    topicArn = event['Records'][0]['Sns']['TopicArn']
+    if topicArn == INFO_TOPIC_ARN:
+        SLACK_CHANNEL = INFO_CHANNEL
+    elif topicArn == ISSUE_TOPIC_ARN:
+        SLACK_CHANNEL = ISSUE_CHANNEL
+    else: 
+        SLACK_CHANNEL = INFO_CHANNEL
+
     text = event['Records'][0]['Sns']['Message']
     logger.info("text: " + str(text))
 
