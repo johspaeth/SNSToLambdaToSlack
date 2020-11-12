@@ -5,10 +5,14 @@
 - 情境 : 可使用 alarm 來觸發 sns 來達到通知的目的
 
 ## 環境設定
-- 設定憑證環境變數 : `export AWS_PROFILE=...`
-- template.yaml 設定 slack 參數
-  - hookUrl, ex : "https://hooks.slack.com/services/..."
-  - slackChannel, ex : "#general"
+- 設定憑證環境變數 : 
+  - `export AWS_PROFILE=...`
+  - `export AWS_REGION=...`
+- template.yaml 設定參數
+  - NotifyLambdaName
+  - SlackHookUrl, ex : "https://hooks.slack.com/services/..."
+  - InfoChannel, ex : "#general"
+  - IssueChannel, ex : "#general"
 
 ## Deploy the sample application
 
